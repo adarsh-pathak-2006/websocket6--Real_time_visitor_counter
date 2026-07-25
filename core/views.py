@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from core.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 
@@ -44,6 +45,6 @@ class LoginView(View):
             else:
                 return render(request, 'login.html', {'form':form_data, 'invalid':'invalid inputs entered' })
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'home.html')  
