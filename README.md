@@ -44,10 +44,28 @@ A modern, real-time visitor counter web application built with Django and Django
    python manage.py runserver
    ```
 
-## Deployment
-This project is configured to be production-ready:
-- Ensure `DEBUG=False` in your `.env`.
-- Set your domain in `ALLOWED_HOSTS`.
-- Provide a `REDIS_URL` to use `RedisChannelLayer` for multi-worker support.
-- Static files are served via `WhiteNoise`. Run `python manage.py collectstatic` before deployment.
-- Use Daphne or an ASGI server (like Uvicorn/Gunicorn) to run the application in production.
+## Deployment on Render
+This project is configured to be seamlessly deployed on [Render](https://render.com). It uses ASGI (`daphne`) to serve Django Channels and includes a Redis instance for the channel layer.
+
+### Option 1: Using Render Blueprint (Recommended)
+We have included a `render.yaml` file to deploy the web application and Redis instance automatically.
+1. Push your code to a GitHub/GitLab repository.
+2. Go to your Render Dashboard and click **New** -> **Blueprint**.
+3. Connect your repository. Render will automatically detect `render.yaml` and configure both the Web Service and the Redis instance.
+4. Click **Apply** to deploy!
+
+### Option 2: Manual Deployment on Render
+If you prefer setting it up manually:
+1. **Create a Redis Instance** on Render. Note down the Internal Redis URL.
+2. **Create a Web Service**:
+   - Environment: `Python 3`
+   - Build Command: `./build.sh`
+   - Start Command: `daphne counter.asgi:application --port $PORT --bind 0.0.0.0`
+3. **Environment Variables**:
+   - `PYTHON_VERSION`: `3.10.0`
+   - `SECRET_KEY`: (Generate a secure random string)
+   - `DEBUG`: `False`
+   - `ALLOWED_HOSTS`: `*` (or your Render URL)
+   - `REDIS_URL`: (The Internal Redis URL from step 1)
+
+*(Note: Don't forget to give execute permissions to your build script locally by running `chmod +x build.sh` before pushing to Git.)*
