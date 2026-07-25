@@ -1,5 +1,6 @@
 from django.urls import path
+from core.consumers import CounterConsumer
 
 websocket_urlpatterns=[
-    path()
+    path('ws/cc/', CounterConsumer.as_asgi(), name='counter')
 ]
