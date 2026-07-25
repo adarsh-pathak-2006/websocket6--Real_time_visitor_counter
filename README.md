@@ -47,16 +47,8 @@ A modern, real-time visitor counter web application built with Django and Django
 ## Deployment on Render
 This project is configured to be seamlessly deployed on [Render](https://render.com). It uses ASGI (`daphne`) to serve Django Channels and includes a Redis instance for the channel layer.
 
-### Option 1: Using Render Blueprint (Recommended)
-We have included a `render.yaml` file to deploy the web application and Redis instance automatically.
-1. Push your code to a GitHub/GitLab repository.
-2. Go to your Render Dashboard and click **New** -> **Blueprint**.
-3. Connect your repository. Render will automatically detect `render.yaml` and configure both the Web Service and the Redis instance.
-4. Click **Apply** to deploy!
-
-### Option 2: Manual Deployment on Render
-If you prefer setting it up manually:
-1. **Create a Redis Instance** on Render. Note down the Internal Redis URL.
+### Deployment Steps
+1. **Create a Redis Instance** on Render. Note down the **Internal Redis URL**.
 2. **Create a Web Service**:
    - Environment: `Python 3`
    - Build Command: `./build.sh`
