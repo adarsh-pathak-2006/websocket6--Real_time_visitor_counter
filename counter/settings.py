@@ -134,11 +134,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if os.environ.get('REDIS_URL'):
+    redis_url = os.environ.get('REDIS_URL')
+    
+    # If using Render's external URL (rediss://), we must disable SSL cert verification
+    if redis_url.startswith('rediss://'):
+        import ssl
+        hosts = [{
+            'address': redis_url,
+            'ssl_cert_reqs': ssl.CERT_NONE,
+        }]
+    else:
+        hosts = [redis_url]
+
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [os.environ.get('REDIS_URL')],
+                "hosts": hosts,
             },
         },
     }
