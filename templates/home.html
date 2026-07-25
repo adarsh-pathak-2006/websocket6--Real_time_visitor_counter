@@ -98,15 +98,27 @@
 
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        counterElement.textContent = data.count;
+        if (data.error) {
+            console.error('Server error:', data.error);
+            counterElement.textContent = 'Err';
+            document.querySelector('.status-dot').style.background = '#ef4444';
+            document.querySelector('.status-badge').style.color = '#ef4444';
+            document.querySelector('.status-badge').innerHTML = '<div class="status-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></div> ' + data.error;
+            return;
+        }
+        if (data.count !== undefined) {
+            counterElement.textContent = data.count;
+        }
     };
 
     socket.onclose = function(e) {
         console.error('WebSocket closed unexpectedly');
-        counterElement.textContent = 'Offline';
-        document.querySelector('.status-dot').style.background = '#ef4444';
-        document.querySelector('.status-badge').style.color = '#ef4444';
-        document.querySelector('.status-badge').innerHTML = '<div class="status-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></div> Disconnected';
+        if (counterElement.textContent !== 'Err') {
+            counterElement.textContent = 'Offline';
+            document.querySelector('.status-dot').style.background = '#ef4444';
+            document.querySelector('.status-badge').style.color = '#ef4444';
+            document.querySelector('.status-badge').innerHTML = '<div class="status-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></div> Disconnected';
+        }
     };
 </script>
 {% endblock body %}
