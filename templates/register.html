@@ -1,20 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}Register Page{% endblock title %}
+{% block title %}Register{% endblock title %}
 
 {% block body %}
+<h1>Create Account</h1>
+<p class="subtitle">Join the live visitor counter</p>
 
 <form method="POST">
-    {{ form }}
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_username">Username</label>
+        {{ form.username }}
+    </div>
+    <div class="form-group">
+        <label for="id_password">Password</label>
+        {{ form.password }}
+    </div>
     <button type="submit">Register</button>
 </form>
 
 {% if user_err %}
-{{ user_err }}
+<div class="alert alert-error">{{ user_err }}</div>
 {% endif %}
 
 {% if invalid %}
-{{ invalid }}
+<div class="alert alert-error">{{ invalid }}</div>
 {% endif %}
 
+<div class="links">
+    Already have an account? <a href="{% url 'login' %}">Login here</a>
+</div>
 {% endblock body %}

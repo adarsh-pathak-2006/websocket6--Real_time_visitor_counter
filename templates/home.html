@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Live Counter{% endblock title %}
+
+{% block extra_head %}
+<style>
+    .counter-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .pulse-ring {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    
+    .pulse-ring::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: inherit;
+        animation: pulse 2s infinite ease-out;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.5); opacity: 0; }
+    }
+    
+    #live-counter {
+        font-size: 4rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        z-index: 10;
+        position: relative;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 8px #34d399;
+    }
+</style>
+{% endblock extra_head %}
+
+{% block body %}
+<h1>Live Viewers</h1>
+<p class="subtitle">Real-time connection tracker</p>
+
+<div class="counter-wrapper">
+    <div class="status-badge">
+        <div class="status-dot"></div>
+        Live Connection
+    </div>
+    
+    <div class="pulse-ring" style="margin-top: 2rem;">
+        <span id="live-counter">...</span>
+    </div>
+    
+    <p style="color: var(--text-muted); text-align: center;">Active users currently on the site</p>
+</div>
+
+<script>
+    const socket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
+        window.location.host + '/ws/cc/'
+    );
+
+    const counterElement = document.getElementById('live-counter');
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        counterElement.textContent = data.count;
+    };
+
+    socket.onclose = function(e) {
+        console.error('WebSocket closed unexpectedly');
+        counterElement.textContent = 'Offline';
+        document.querySelector('.status-dot').style.background = '#ef4444';
+        document.querySelector('.status-badge').style.color = '#ef4444';
+        document.querySelector('.status-badge').innerHTML = '<div class="status-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></div> Disconnected';
+    };
+</script>
+{% endblock body %}
