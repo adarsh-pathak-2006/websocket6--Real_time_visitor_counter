@@ -44,4 +44,6 @@ class LoginView(View):
             else:
                 return render(request, 'login.html', {'form':form_data, 'invalid':'invalid inputs entered' })
 
-    
+class HomeView(View):
+    def get(self, request):
+        return render(request, 'home.html')  
