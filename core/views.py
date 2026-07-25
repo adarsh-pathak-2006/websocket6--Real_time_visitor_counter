@@ -19,7 +19,7 @@ class RegisterView(View):
                 return render(request, 'register.html', {'form':form_data, 'user_err':'user already exists' })
             else:
                 user=User.objects.create_user(username=username, password=password)
-                login(user)
+                login(request,user)
                 return redirect('home')
         else:
             return render(request, 'register.html', {'form':form_data, 'invalid':'invalid inputs entered' })
@@ -35,9 +35,9 @@ class LoginView(View):
             if form_data.is_valid():
                 username=form_data.cleaned_data["username"]
                 password=form_data.cleaned_data["password"]
-                user=authenticate(username=username, password=password)
+                user=authenticate(request ,username=username, password=password)
                 if user is not None:
-                    login(user)
+                    login(request,user)
                     return redirect('home')
                 else:
                     return render(request, 'login.html', {'form':form_data, 'user_err':'User not found register.' })
